@@ -2,6 +2,11 @@
 USE review_kantin;
 GO
 
+USE review_kantin;
+GO
+SELECT * FROM dbo.USERS;
+
+
 -- ================================================================ USERS
 IF NOT EXISTS (SELECT 1 FROM dbo.USERS)
 BEGIN

@@ -247,6 +247,17 @@ npm run dev
 | POST | `/api/v1/stalls` | `201` stall baru |
 | PUT | `/api/v1/stalls/:id` | `200` stall ter-update |
 | DELETE | `/api/v1/stalls/:id` | `200` stall terhapus |
+| GET | `/api/v1/users` | Daftar users tanpa password hash |
+| POST | `/api/v1/users` | Buat user; body memakai `name`, `email`, `password`, `role` |
+| GET/POST | `/api/v1/menu-items` | Daftar menu (filter `stallId`, `page`, `limit`) / buat menu |
+| GET/PUT/DELETE | `/api/v1/menu-items/:id` | Detail, ubah, atau hapus menu; response menyertakan stall |
+| GET | `/api/v1/reviews?stallId=:id` | Daftar review beserta user |
+| POST/DELETE | `/api/v1/reviews` / `/api/v1/reviews/:id` | Buat atau hapus review |
+| POST | `/api/v1/likes` | Buat like dengan body `reviewId` dan `userId` |
+| DELETE | `/api/v1/likes/:reviewId/:userId` | Hapus like |
+| GET | `/api/v1/flags` | Daftar flag dengan reporter dan review |
+| PUT | `/api/v1/flags/:id` | Ubah status dengan body `status`: `pending`, `resolved`, atau `dismissed` |
+| GET/POST | `/api/v1/audit-logs` | Daftar atau catat audit log |
 
 Contoh:
 

@@ -1,5 +1,9 @@
 import type { Request, Response } from 'express';
 import { MenuItemService } from '../services/menuItemService.ts';
+import { getUser } from '../middlewares/auth.ts';
+import { getValidated } from '../middlewares/validate.ts';
+import type { IdParam } from '../schemas/commonSchema.ts';
+import type { CreateMenuItemInput, MenuItemQuery, UpdateMenuItemInput } from '../schemas/menuItemSchema.ts';
 
 export class MenuItemController {
   private menuItemService: MenuItemService;
@@ -8,62 +12,34 @@ export class MenuItemController {
     this.menuItemService = menuItemService;
   }
 
-  private handleError(res: Response, error: unknown): Response {
-    if (error instanceof Error && error.message === 'MENU_ITEM_NOT_FOUND') {
-      return res.status(404).json({ status: 'fail', message: 'Data menu tidak ditemukan' });
-    }
-    return res.status(500).json({
-      status: 'error',
-      message: 'Terjadi kesalahan pada server',
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
-
-  getMenuItems = async (req: Request, res: Response): Promise<Response> => {
-    try {
-      const page = Number(req.query.page) || 1;
-      const limit = Number(req.query.limit) || 10;
-      const stallId = req.query.stallId ? Number(req.query.stallId) : undefined;
-      const { data, total } = await this.menuItemService.getAllMenuItems({ page, limit, stallId });
-      return res.status(200).json({ status: 'success', meta: { page, limit, total }, data });
-    } catch (error) {
-      return this.handleError(res, error);
-    }
+  getMenuItems = async (_req: Request, res: Response): Promise<void> => {
+    const { page, limit, stallId } = getValidated<MenuItemQuery>(res, 'query');
+    const { data, total } = await this.menuItemService.getAllMenuItems({ page, limit, stallId });
+    res.status(200).json({ status: 'success', meta: { page, limit, total }, data });
   };
 
-  getMenuItemById = async (req: Request, res: Response): Promise<Response> => {
-    try {
-      const item = await this.menuItemService.getMenuItemById(Number(req.params.id));
-      return res.status(200).json({ status: 'success', data: item });
-    } catch (error) {
-      return this.handleError(res, error);
-    }
+  getMenuItemById = async (_req: Request, res: Response): Promise<void> => {
+    const { id } = getValidated<IdParam>(res, 'params');
+    const item = await this.menuItemService.getMenuItemById(id);
+    res.status(200).json({ status: 'success', data: item });
   };
 
-  createMenuItem = async (req: Request, res: Response): Promise<Response> => {
-    try {
-      const item = await this.menuItemService.createMenuItem(req.body);
-      return res.status(201).json({ status: 'success', data: item });
-    } catch (error) {
-      return this.handleError(res, error);
-    }
+  createMenuItem = async (req: Request, res: Response): Promise<void> => {
+    const body = getValidated<CreateMenuItemInput>(res, 'body');
+    const item = await this.menuItemService.createMenuItem(body, getUser(req));
+    res.status(201).json({ status: 'success', data: item });
   };
 
-  updateMenuItem = async (req: Request, res: Response): Promise<Response> => {
-    try {
-      const item = await this.menuItemService.updateMenuItem(Number(req.params.id), req.body);
-      return res.status(200).json({ status: 'success', data: item });
-    } catch (error) {
-      return this.handleError(res, error);
-    }
+  updateMenuItem = async (req: Request, res: Response): Promise<void> => {
+    const { id } = getValidated<IdParam>(res, 'params');
+    const body = getValidated<UpdateMenuItemInput>(res, 'body');
+    const item = await this.menuItemService.updateMenuItem(id, body, getUser(req));
+    res.status(200).json({ status: 'success', data: item });
   };
 
-  deleteMenuItem = async (req: Request, res: Response): Promise<Response> => {
-    try {
-      const item = await this.menuItemService.deleteMenuItem(Number(req.params.id));
-      return res.status(200).json({ status: 'success', data: item });
-    } catch (error) {
-      return this.handleError(res, error);
-    }
+  deleteMenuItem = async (req: Request, res: Response): Promise<void> => {
+    const { id } = getValidated<IdParam>(res, 'params');
+    const item = await this.menuItemService.deleteMenuItem(id, getUser(req));
+    res.status(200).json({ status: 'success', data: item });
   };
 }

@@ -15,6 +15,14 @@
   "schemes": [
     "http"
   ],
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Masukkan token dengan format: Bearer <JWT>"
+    }
+  },
   "paths": {
     "/health": {
       "get": {
@@ -22,9 +30,81 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterInput"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Body tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginInput"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Body tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           },
-          "500": {
-            "description": "Internal Server Error"
+          "401": {
+            "description": "Email atau password salah",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -58,11 +138,17 @@
           "200": {
             "description": "Daftar warung"
           }
-        }
+        },
+        "security": []
       },
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -75,6 +161,18 @@
         "responses": {
           "201": {
             "description": "Warung dibuat"
+          },
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Role tidak diizinkan",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -97,7 +195,8 @@
           "404": {
             "description": "Tidak ditemukan"
           }
-        }
+        },
+        "security": []
       },
       "put": {
         "description": "",
@@ -107,6 +206,11 @@
             "in": "path",
             "required": true,
             "type": "integer"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           },
           {
             "name": "body",
@@ -121,6 +225,18 @@
           "200": {
             "description": "Warung ter-update"
           },
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Role atau kepemilikan tidak diizinkan",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
           "404": {
             "description": "Tidak ditemukan"
           }
@@ -134,11 +250,28 @@
             "in": "path",
             "required": true,
             "type": "integer"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "Warung terhapus"
+          },
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Khusus admin",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           },
           "404": {
             "description": "Tidak ditemukan"
@@ -164,7 +297,8 @@
           "404": {
             "description": "Tidak ditemukan"
           }
-        }
+        },
+        "security": []
       }
     },
     "/api/v1/menu-items/": {
@@ -174,13 +308,38 @@
           "default": {
             "description": ""
           }
-        }
+        },
+        "security": []
       },
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MenuItemInput"
+            }
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Role atau kepemilikan tidak diizinkan",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -200,7 +359,8 @@
           "default": {
             "description": ""
           }
-        }
+        },
+        "security": []
       },
       "put": {
         "description": "",
@@ -210,11 +370,33 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MenuItemInput"
+            }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Role atau kepemilikan tidak diizinkan",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       },
@@ -226,11 +408,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Role atau kepemilikan tidak diizinkan",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -238,17 +434,57 @@
     "/api/v1/users/": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Khusus admin",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       },
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserInput"
+            }
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Khusus admin",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -260,13 +496,32 @@
           "default": {
             "description": ""
           }
-        }
+        },
+        "security": []
       },
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReviewInput"
+            }
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -280,11 +535,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Review milik pengguna lain",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -292,14 +561,32 @@
     "/api/v1/likes/": {
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LikeInput"
+            }
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
     },
-    "/api/v1/likes/{reviewId}/{userId}": {
+    "/api/v1/likes/{reviewId}": {
       "delete": {
         "description": "",
         "parameters": [
@@ -310,15 +597,17 @@
             "type": "string"
           },
           {
-            "name": "userId",
-            "in": "path",
-            "required": true,
+            "name": "authorization",
+            "in": "header",
             "type": "string"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -326,9 +615,25 @@
     "/api/v1/flags/": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Khusus admin",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -342,11 +647,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Khusus admin",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -360,11 +679,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Khusus admin",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -372,17 +705,57 @@
     "/api/v1/audit-logs/": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Khusus admin",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       },
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AuditInput"
+            }
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Token tidak ada atau tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Khusus admin",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -392,87 +765,232 @@
     "StallInput": {
       "type": "object",
       "properties": {
-        "type": {
+        "name": {
           "type": "string",
-          "example": "object"
+          "example": "Warung Baru"
         },
-        "required": {
-          "type": "array",
-          "example": [
-            "ownerId",
-            "name"
-          ],
-          "items": {
-            "type": "string"
-          }
+        "category": {
+          "type": "string",
+          "example": "Nasi"
         },
-        "properties": {
+        "location": {
+          "type": "string",
+          "example": "Kantin FK"
+        },
+        "description": {
+          "type": "string",
+          "example": "Warung makan siang"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "RegisterInput": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Nama Pengguna"
+        },
+        "email": {
+          "type": "string",
+          "example": "customer@example.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "password123"
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "password"
+      ]
+    },
+    "LoginInput": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "customer@example.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "password123"
+        }
+      },
+      "required": [
+        "email",
+        "password"
+      ]
+    },
+    "UserInput": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Nama Pengguna"
+        },
+        "email": {
+          "type": "string",
+          "example": "owner@example.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "password123"
+        },
+        "role": {
+          "type": "string",
+          "example": "owner"
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "password",
+        "role"
+      ]
+    },
+    "MenuItemInput": {
+      "type": "object",
+      "properties": {
+        "stallId": {
+          "type": "number",
+          "example": 1
+        },
+        "name": {
+          "type": "string",
+          "example": "Nasi Goreng"
+        },
+        "price": {
+          "type": "number",
+          "example": 15000
+        },
+        "isAvailable": {
+          "type": "boolean",
+          "example": true
+        }
+      },
+      "required": [
+        "stallId",
+        "name",
+        "price"
+      ]
+    },
+    "ReviewInput": {
+      "type": "object",
+      "properties": {
+        "stallId": {
+          "type": "number",
+          "example": 1
+        },
+        "rating": {
+          "type": "number",
+          "example": 5
+        },
+        "comment": {
+          "type": "string",
+          "example": "Enak!"
+        }
+      },
+      "required": [
+        "stallId",
+        "rating"
+      ]
+    },
+    "LikeInput": {
+      "type": "object",
+      "properties": {
+        "reviewId": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "reviewId"
+      ]
+    },
+    "FlagInput": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "resolved"
+        }
+      },
+      "required": [
+        "status"
+      ]
+    },
+    "AuditInput": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "example": "review.flagged"
+        },
+        "targetTable": {
+          "type": "string",
+          "example": "REVIEWS"
+        },
+        "targetId": {
+          "type": "number",
+          "example": 1
+        },
+        "metadata": {
           "type": "object",
           "properties": {
-            "ownerId": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                },
-                "example": {
-                  "type": "number",
-                  "example": 2
-                }
-              }
-            },
-            "name": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "example": {
-                  "type": "string",
-                  "example": "Warung Baru"
-                }
-              }
-            },
-            "category": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "example": {
-                  "type": "string",
-                  "example": "Nasi"
-                }
-              }
-            },
-            "location": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "example": {
-                  "type": "string",
-                  "example": "Kantin FK"
-                }
-              }
-            },
-            "description": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
+            "reason": {
+              "type": "string",
+              "example": "Spam"
+            }
+          }
+        }
+      },
+      "required": [
+        "action",
+        "targetTable",
+        "targetId"
+      ]
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "fail"
+        },
+        "message": {
+          "type": "string",
+          "example": "Validasi gagal"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": {
+                "type": "string",
+                "example": "name"
+              },
+              "message": {
+                "type": "string",
+                "example": "name minimal 3 karakter"
               }
             }
           }
         }
-      }
+      },
+      "required": [
+        "status",
+        "message"
+      ]
     }
-  }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
 }

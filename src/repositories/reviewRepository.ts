@@ -10,6 +10,12 @@ export interface CreateReviewInput {
 }
 
 export class ReviewRepository {
+  async findById(id: number) {
+    const db = await getDb();
+    const rows = await db.select().from(reviews).where(eq(reviews.id, id));
+    return rows[0];
+  }
+
   async findAll(stallId?: number) {
     const db = await getDb();
     const query = db

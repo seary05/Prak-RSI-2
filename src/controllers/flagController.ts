@@ -1,28 +1,21 @@
 import type { Request, Response } from 'express';
 import { FlagService } from '../services/flagService.ts';
-import type { FlagStatus } from '../repositories/flagRepository.ts';
-
-const flagStatuses: FlagStatus[] = ['pending', 'resolved', 'dismissed'];
+import { getValidated } from '../middlewares/validate.ts';
+import type { IdParam } from '../schemas/commonSchema.ts';
+import type { FlagStatusInput } from '../schemas/flagSchema.ts';
 
 export class FlagController {
   constructor(private flagService: FlagService = new FlagService()) {}
 
-  getFlags = async (_req: Request, res: Response): Promise<Response> => {
-    try {
-      return res.status(200).json({ status: 'success', data: await this.flagService.getFlags() });
-    } catch (error) {
-      return res.status(500).json({ status: 'error', message: 'Gagal mengambil flags', error: error instanceof Error ? error.message : String(error) });
-    }
+  getFlags = async (_req: Request, res: Response): Promise<void> => {
+    const data = await this.flagService.getFlags();
+    res.status(200).json({ status: 'success', data });
   };
 
-  updateStatus = async (req: Request, res: Response): Promise<Response> => {
-    const { status } = req.body ?? {};
-    if (!flagStatuses.includes(status)) return res.status(400).json({ status: 'fail', message: 'status harus pending, resolved, atau dismissed' });
-    try {
-      return res.status(200).json({ status: 'success', data: await this.flagService.updateStatus(Number(req.params.id), status) });
-    } catch (error) {
-      if (error instanceof Error && error.message === 'FLAG_NOT_FOUND') return res.status(404).json({ status: 'fail', message: 'Flag tidak ditemukan' });
-      return res.status(500).json({ status: 'error', message: 'Gagal memperbarui flag', error: error instanceof Error ? error.message : String(error) });
-    }
+  updateStatus = async (req: Request, res: Response): Promise<void> => {
+    const { id } = getValidated<IdParam>(res, 'params');
+    const { status } = getValidated<FlagStatusInput>(res, 'body');
+    const data = await this.flagService.updateStatus(id, status);
+    res.status(200).json({ status: 'success', data });
   };
 }

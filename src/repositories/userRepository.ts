@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm';
 import { getDb } from '../db/index.ts';
 import { users } from '../db/schema.ts';
 
@@ -9,6 +10,12 @@ export interface CreateUserInput {
 }
 
 export class UserRepository {
+  async findByEmail(email: string) {
+    const db = await getDb();
+    const rows = await db.select().from(users).where(eq(users.email, email));
+    return rows[0];
+  }
+
   async findAll() {
     const db = await getDb();
     return db.select({

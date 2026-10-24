@@ -9,7 +9,7 @@ const doc = {
       type: 'apiKey',
       name: 'Authorization',
       in: 'header',
-      description: 'Masukkan token dengan format: Bearer <JWT>',
+      description: 'Tempel token dari login; awalan Bearer ditambahkan otomatis.',
     },
   },
   definitions: {
@@ -68,4 +68,4 @@ const doc = {
 const outputFile = './src/docs/swagger-output.json';
 const endpointsFiles = ['./src/index.ts'];
 
-swaggerAutogen()(outputFile, endpointsFiles, doc);
+swaggerAutogen({ autoHeaders: false })(outputFile, endpointsFiles, doc);

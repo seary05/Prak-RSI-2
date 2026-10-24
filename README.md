@@ -309,6 +309,10 @@ File terkait:
 - `src/index.ts` — `app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));`
 
 Buka `/docs`, lalu klik **Try it out** untuk mengisi parameter/body dan mengirim request.
+Untuk endpoint yang memerlukan autentikasi, login lewat `POST /api/v1/auth/login`,
+klik **Authorize**, lalu tempel nilai `data.token` saja. Swagger UI akan mengirimkannya
+dengan format `Authorization: Bearer <token>`. Jangan isi parameter header Authorization
+manual pada endpoint; autentikasi diatur lewat tombol **Authorize**.
 
 > Spec yang dihasilkan berformat **Swagger 2.0** — karena itu schema dirujuk lewat
 > `#/definitions/...` (bukan `#/components/schemas/...`).

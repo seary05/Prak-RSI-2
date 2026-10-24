@@ -9,9 +9,7 @@ export const authenticate: RequestHandler = (
   next: NextFunction,
 ) => {
   const authorization = req.headers.authorization;
-  const token = authorization?.startsWith('Bearer ')
-    ? authorization.slice('Bearer '.length).trim()
-    : '';
+  const token = authorization?.match(/^Bearer\s+(\S+)\s*$/i)?.[1] ?? '';
   if (!token) return next(new UnauthorizedError('Header Authorization Bearer wajib dikirim'));
 
   try {

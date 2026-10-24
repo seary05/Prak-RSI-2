@@ -19,8 +19,28 @@ const PORT: number = 3000;
 
 app.use(express.json());
 
-// Dokumentasi API (Swagger UI) dari spec hasil generate swagger-autogen.
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Normalize tokens pasted into Swagger's apiKey field to the format expected by auth middleware.
+app.use(
+  '/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    swaggerOptions: {
+      requestInterceptor: (request: { headers: Record<string, string> }) => {
+        const authorizationHeader = Object.keys(request.headers).find(
+          (header) => header.toLowerCase() === 'authorization',
+        );
+        const authorization = authorizationHeader
+          ? request.headers[authorizationHeader].trim()
+          : '';
+
+        if (authorization && !/^Bearer\s/i.test(authorization)) {
+          request.headers[authorizationHeader ?? 'Authorization'] = `Bearer ${authorization}`;
+        }
+        return request;
+      },
+    },
+  }),
+);
 
 app.get('/health', async (_req, res) => {
   // #swagger.security = []

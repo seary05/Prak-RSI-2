@@ -20,7 +20,7 @@
       "type": "apiKey",
       "name": "Authorization",
       "in": "header",
-      "description": "Masukkan token dengan format: Bearer <JWT>"
+      "description": "Tempel token dari login; awalan Bearer ditambahkan otomatis."
     }
   },
   "paths": {
@@ -92,13 +92,6 @@
     "/api/v1/auth/me": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "401": {
             "description": "Token tidak ada atau tidak valid",
@@ -144,11 +137,6 @@
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -208,11 +196,6 @@
             "type": "integer"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
             "required": true,
@@ -250,11 +233,6 @@
             "in": "path",
             "required": true,
             "type": "integer"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -315,11 +293,6 @@
         "description": "",
         "parameters": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
             "required": true,
@@ -372,11 +345,6 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
             "required": true,
@@ -408,11 +376,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -434,13 +397,6 @@
     "/api/v1/users/": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "401": {
             "description": "Token tidak ada atau tidak valid",
@@ -459,11 +415,6 @@
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -503,11 +454,6 @@
         "description": "",
         "parameters": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
             "required": true,
@@ -535,11 +481,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -562,11 +503,6 @@
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -595,11 +531,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -615,13 +546,6 @@
     "/api/v1/flags/": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "401": {
             "description": "Token tidak ada atau tidak valid",
@@ -646,11 +570,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -679,11 +598,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -705,13 +619,6 @@
     "/api/v1/audit-logs/": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "401": {
             "description": "Token tidak ada atau tidak valid",
@@ -730,11 +637,6 @@
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
